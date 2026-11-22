@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOKO MUSTAFA - Sistem Pencatatan Kas & Order</title>
+    <!-- Memuat Tailwind CSS untuk tata letak responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat font Plus Jakarta Sans & ikon Font Awesome -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -31,10 +33,10 @@
 </head>
 <body class="antialiased min-h-screen flex flex-col">
 
-    <!-- Toast Notifications -->
+    <!-- Kontainer notifikasi toast -->
     <div id="toast-container" class="fixed bottom-5 right-5 left-5 sm:left-auto z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <!-- Custom Confirmation Modal -->
+    <!-- Modal konfirmasi kustom (pengganti confirm bawaan browser) -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200">
             <div class="flex items-center gap-3 text-amber-600 mb-3">
@@ -45,14 +47,14 @@
             </div>
             <p id="modal-message" class="text-slate-600 text-sm mb-6 leading-relaxed">Apakah Anda yakin?</p>
             <div class="flex justify-end gap-2.5">
-                <button id="modal-cancel" class="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-stone-100 hover:bg-stone-200 transition">Batal</button>
-                <button id="modal-confirm" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-sage-primary text-white transition shadow-sm">Ya, Lanjutkan</button>
+                <button type="button" id="modal-cancel" class="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-stone-100 hover:bg-stone-200 transition">Batal</button>
+                <button type="button" id="modal-confirm" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-sage-primary text-white transition shadow-sm">Ya, Lanjutkan</button>
             </div>
         </div>
     </div>
 
     <!-- =====================================================================
-         1. HALAMAN LOGIN (TANPA TOMBOL LOGIN CEPAT)
+         1. HALAMAN LOGIN BERSIH (TANPA TOMBOL LOGIN CEPAT)
          ===================================================================== -->
     <div id="login-screen" class="min-h-screen flex items-center justify-center p-4 bg-[#F4EFE6]">
         <div class="max-w-md w-full bg-white rounded-3xl shadow-xl border border-stone-200/90 p-7 sm:p-9 space-y-6 page-fade">
@@ -90,17 +92,17 @@
     </div>
 
     <!-- =====================================================================
-         2. MAIN APPLICATION SHELL
+         2. KERANGKA UTAMA APLIKASI
          ===================================================================== -->
     <div id="app-shell" class="hidden min-h-screen flex-1 flex relative">
 
-        <!-- Mobile Backdrop -->
+        <!-- Latar belakang gelap saat sidebar terbuka di mobile -->
         <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 hidden lg:hidden"></div>
 
-        <!-- LEFT SIDEBAR -->
+        <!-- SIDEBAR NAVIGASI SAMPING -->
         <aside id="app-sidebar" class="fixed lg:sticky top-0 left-0 z-40 h-screen w-72 bg-cream-sidebar border-r border-stone-200/90 flex flex-col justify-between transition-transform duration-300 -translate-x-full lg:translate-x-0 shrink-0">
             <div class="p-5 space-y-6 overflow-y-auto">
-                <!-- Store Brand -->
+                <!-- Identitas Toko -->
                 <div class="flex items-center justify-between gap-2">
                     <div class="flex items-center gap-3 min-w-0">
                         <div id="sidebar-brand-initials" class="w-11 h-11 rounded-2xl bg-[#1E513B] text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
@@ -111,41 +113,41 @@
                             <p id="sidebar-shop-tagline" class="text-[11px] font-semibold text-slate-500 truncate">Produksi & Konveksi Pakaian</p>
                         </div>
                     </div>
-                    <button onclick="toggleSidebar(false)" class="lg:hidden w-8 h-8 rounded-lg text-slate-500 hover:bg-stone-200/70 flex items-center justify-center">
+                    <button type="button" onclick="toggleSidebar(false)" class="lg:hidden w-8 h-8 rounded-lg text-slate-500 hover:bg-stone-200/70 flex items-center justify-center">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <!-- Navigation Menu -->
+                <!-- Menu Navigasi -->
                 <nav class="space-y-1.5" id="sidebar-nav">
-                    <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
-                        <span class="flex items-center gap-3"><i class="fa-solid fa-border-all w-4 text-center"></i> Dashboard</span>
+                    <button type="button" onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-house w-4 text-center"></i> Home</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
-                    <button onclick="navigateTo('catat')" data-nav="catat" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                    <button type="button" onclick="navigateTo('catat', 'masuk')" data-nav="catat" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
                         <span class="flex items-center gap-3"><i class="fa-solid fa-circle-plus w-4 text-center"></i> Pencatatan Transaksi</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
-                    <button onclick="navigateTo('riwayat')" data-nav="riwayat" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                    <button type="button" onclick="navigateTo('riwayat')" data-nav="riwayat" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
                         <span class="flex items-center gap-3"><i class="fa-solid fa-clock-rotate-left w-4 text-center"></i> Riwayat Transaksi</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
-                    <button onclick="navigateTo('rekap')" data-nav="rekap" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                    <button type="button" onclick="navigateTo('rekap')" data-nav="rekap" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
                         <span class="flex items-center gap-3"><i class="fa-solid fa-chart-column w-4 text-center"></i> Laporan & Rekap Bulanan</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
-                    <button onclick="navigateTo('pengaturan')" data-nav="pengaturan" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                    <button type="button" onclick="navigateTo('pengaturan')" data-nav="pengaturan" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
                         <span class="flex items-center gap-3"><i class="fa-solid fa-users-gear w-4 text-center"></i> Pengaturan Pengguna & Toko</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
                 </nav>
             </div>
 
-            <!-- Sidebar Bottom Status -->
+            <!-- Status Koneksi Cloud di Sidebar -->
             <div class="p-4">
                 <div class="bg-[#F9ECEF] border border-[#F0D6DC] rounded-2xl p-4 text-center space-y-1.5">
                     <div id="sidebar-sync-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-white text-slate-600 shadow-2xs">
@@ -158,37 +160,40 @@
             </div>
         </aside>
 
-        <!-- RIGHT CONTENT AREA -->
+        <!-- AREA KONTEN KANAN -->
         <div class="flex-1 flex flex-col min-w-0">
 
-            <!-- TOPBAR -->
+            <!-- TOPBAR DENGAN TOMBOL HOME -->
             <header class="sticky top-0 z-30 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-stone-200/80 px-4 sm:px-7 h-16 flex items-center justify-between gap-3">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <button onclick="toggleSidebar(true)" class="lg:hidden w-10 h-10 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-slate-700 hover:bg-stone-100 shrink-0 shadow-2xs">
+                <div class="flex items-center gap-2 min-w-0">
+                    <button type="button" onclick="toggleSidebar(true)" class="lg:hidden w-10 h-10 rounded-xl bg-white border border-stone-200 flex items-center justify-center text-slate-700 hover:bg-stone-100 shrink-0 shadow-2xs">
                         <i class="fa-solid fa-bars"></i>
                     </button>
 
-                    <button onclick="navigateTo('dashboard')" class="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E6F1EB] hover:bg-[#D8E9DF] text-[#1E513B] border border-[#C9DFD2] text-xs sm:text-sm font-extrabold transition truncate">
+                    <button type="button" onclick="navigateTo('dashboard')" title="Kembali ke Menu Awal (Home)" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-stone-100 text-slate-800 border border-stone-200 text-xs font-extrabold transition shrink-0 shadow-2xs">
+                        <i class="fa-solid fa-house text-[#1E513B]"></i>
+                        <span>Home</span>
+                    </button>
+
+                    <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E6F1EB] text-[#1E513B] border border-[#C9DFD2] text-xs font-extrabold truncate">
                         <i class="fa-solid fa-store text-xs"></i>
                         <span id="topbar-shop-name" class="truncate">TOKO MUSTAFA</span>
-                    </button>
+                    </span>
                 </div>
 
-                <!-- Right Controls: Sync, DP Bell, User Dropdown -->
+                <!-- Kontrol Kanan: Sinkronisasi, Notifikasi DP, dan Akun -->
                 <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                    <button onclick="manualSyncNow()" id="btn-sync-now" title="Sinkronkan Data Cloud" class="w-9 h-9 rounded-full bg-white border border-stone-200 hover:bg-stone-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
+                    <button type="button" onclick="manualSyncNow()" id="btn-sync-now" title="Sinkronkan Data Cloud" class="w-9 h-9 rounded-full bg-white border border-stone-200 hover:bg-stone-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
 
-                    <!-- Notification Bell for Unpaid DP Orders -->
-                    <button onclick="navigateTo('riwayat', 'DP')" title="Lihat Order DP Belum Lunas" class="relative w-9 h-9 rounded-full bg-white border border-stone-200 hover:bg-stone-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
+                    <button type="button" onclick="navigateTo('riwayat', 'DP')" title="Lihat Order DP Belum Lunas" class="relative w-9 h-9 rounded-full bg-white border border-stone-200 hover:bg-stone-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
                         <i class="fa-regular fa-bell"></i>
                         <span id="dp-bell-count" class="hidden -top-1 -right-1 absolute min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
                     </button>
 
-                    <!-- User Dropdown -->
                     <div class="relative">
-                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white border border-stone-200 hover:bg-stone-50 transition shadow-2xs">
+                        <button type="button" onclick="toggleUserDropdown()" class="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full bg-white border border-stone-200 hover:bg-stone-50 transition shadow-2xs">
                             <span id="user-avatar-initial" class="w-7 h-7 rounded-full bg-[#1E513B] text-white font-extrabold text-xs flex items-center justify-center">A</span>
                             <span id="topbar-user-role-pill" class="hidden sm:inline text-xs font-bold text-slate-700">Admin Toko</span>
                             <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
@@ -202,10 +207,10 @@
                                 </div>
                                 <p id="dropdown-user-email" class="text-xs text-slate-500 truncate">admin@toko.id</p>
                             </div>
-                            <button onclick="toggleUserDropdown(); navigateTo('pengaturan')" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-stone-50 flex items-center gap-2.5">
+                            <button type="button" onclick="toggleUserDropdown(); navigateTo('pengaturan')" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-700 hover:bg-stone-50 flex items-center gap-2.5">
                                 <i class="fa-solid fa-users-gear text-slate-400 w-4"></i> Pengaturan Pengguna
                             </button>
-                            <button onclick="handleLogout()" class="w-full px-4 py-2.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2.5">
+                            <button type="button" onclick="handleLogout()" class="w-full px-4 py-2.5 text-left text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2.5">
                                 <i class="fa-solid fa-right-from-bracket w-4"></i> Keluar dari Aplikasi
                             </button>
                         </div>
@@ -213,11 +218,11 @@
                 </div>
             </header>
 
-            <!-- MAIN CONTENT -->
+            <!-- KONTEN HALAMAN -->
             <main class="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-7 py-6 sm:py-8 space-y-6">
 
                 <!-- =========================================================
-                     VIEW 1: DASHBOARD
+                     VIEW 1: HOME / DASHBOARD
                      ========================================================= -->
                 <section id="view-dashboard" class="page-fade space-y-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -235,12 +240,12 @@
                                 Halo, <span id="hero-user-name" class="font-bold text-slate-700">Admin Toko</span> — pantau arus kas, order masuk, dan biaya produksi hari ini.
                             </p>
                         </div>
-                        <button onclick="navigateTo('catat')" class="px-5 py-3 rounded-full bg-sage-primary text-white text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-2 transition shrink-0">
+                        <button type="button" onclick="navigateTo('catat', 'masuk')" class="px-5 py-3 rounded-full bg-sage-primary text-white text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-2 transition shrink-0">
                             <i class="fa-solid fa-plus"></i> Catat Transaksi Baru
                         </button>
                     </div>
 
-                    <!-- 4 Pastel Summary Cards -->
+                    <!-- 4 Kartu Ringkasan Utama -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <!-- Saldo Usaha -->
                         <div onclick="navigateTo('riwayat')" class="cursor-pointer bg-[#E6F1EB] hover:bg-[#DCEBE3] border border-[#CFE2D7] rounded-3xl p-5 sm:p-6 transition">
@@ -269,7 +274,7 @@
                                     <p id="dash-in" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-0.5 truncate">Rp 0</p>
                                 </div>
                             </div>
-                            <p id="dash-in-sub" class="text-xs font-semibold text-[#9F3A52] mt-4">
+                            <p class="text-xs font-semibold text-[#9F3A52] mt-4">
                                 Akumulasi kas diterima dari order & pelunasan
                             </p>
                         </div>
@@ -285,12 +290,12 @@
                                     <p id="dash-out" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-0.5 truncate">Rp 0</p>
                                 </div>
                             </div>
-                            <p id="dash-out-sub" class="text-xs font-semibold text-[#1E513B] mt-4">
+                            <p class="text-xs font-semibold text-[#1E513B] mt-4">
                                 Akumulasi bahan baku, upah jahit & operasional
                             </p>
                         </div>
 
-                        <!-- Piutang DP / Selisih -->
+                        <!-- Piutang DP -->
                         <div onclick="navigateTo('riwayat', 'DP')" class="cursor-pointer bg-[#FDF2F4] hover:bg-[#F9E6EA] border border-[#F4D6DD] rounded-3xl p-5 sm:p-6 transition">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl bg-[#DE647E] text-white flex items-center justify-center text-lg shrink-0 shadow-xs">
@@ -307,14 +312,14 @@
                         </div>
                     </div>
 
-                    <!-- Recent Transactions Preview -->
+                    <!-- Transaksi Terbaru -->
                     <div class="bg-white rounded-3xl border border-stone-200/90 p-5 sm:p-6 shadow-2xs space-y-4">
                         <div class="flex items-center justify-between gap-2">
                             <div>
                                 <h3 class="text-base font-extrabold text-slate-900">Transaksi Terbaru</h3>
                                 <p class="text-xs text-slate-500">Catatan order masuk dan pengeluaran terakhir</p>
                             </div>
-                            <button onclick="navigateTo('riwayat')" class="text-xs font-bold text-[#1E513B] hover:underline shrink-0">
+                            <button type="button" onclick="navigateTo('riwayat')" class="text-xs font-bold text-[#1E513B] hover:underline shrink-0">
                                 Lihat Semua Riwayat &rarr;
                             </button>
                         </div>
@@ -323,26 +328,26 @@
                 </section>
 
                 <!-- =========================================================
-                     VIEW 2: PENCATATAN TRANSAKSI (TAB UANG MASUK & KELUAR)
+                     VIEW 2: PENCATATAN TRANSAKSI (UANG MASUK & UANG KELUAR)
                      ========================================================= -->
                 <section id="view-catat" class="hidden page-fade space-y-6">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <h2 class="text-2xl font-extrabold text-slate-900">Pencatatan Transaksi</h2>
-                            <p class="text-xs text-slate-500">Pilih jenis transaksi pemasukan order atau pengeluaran operasional konveksi</p>
+                            <p class="text-xs text-slate-500">Catat uang masuk (order / DP / pelunasan) atau uang keluar konveksi</p>
                         </div>
-                        <button onclick="navigateTo('dashboard')" class="px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-xs font-bold text-slate-700 hover:bg-stone-100">
-                            <i class="fa-solid fa-house mr-1"></i> Dashboard
+                        <button type="button" onclick="navigateTo('dashboard')" class="px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-xs font-bold text-slate-700 hover:bg-stone-100">
+                            <i class="fa-solid fa-house mr-1"></i> Home
                         </button>
                     </div>
 
-                    <!-- Tab Switcher -->
+                    <!-- Switcher Tab -->
                     <div class="bg-[#F4EFE6] p-1.5 rounded-2xl grid grid-cols-2 gap-1.5 max-w-xl">
                         <button type="button" id="tab-btn-masuk" onclick="switchTxTab('masuk')" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 bg-[#1E513B] text-white shadow-xs">
-                            <i class="fa-solid fa-circle-plus"></i> Uang Masuk (Order / Pelunasan)
+                            <i class="fa-solid fa-circle-plus"></i> Uang Masuk
                         </button>
                         <button type="button" id="tab-btn-keluar" onclick="switchTxTab('keluar')" class="py-2.5 px-4 rounded-xl text-xs sm:text-sm font-extrabold transition flex items-center justify-center gap-2 text-slate-600 hover:bg-white/60">
-                            <i class="fa-solid fa-circle-minus"></i> Uang Keluar (Bahan & Operasional)
+                            <i class="fa-solid fa-circle-minus"></i> Uang Keluar
                         </button>
                     </div>
 
@@ -455,9 +460,9 @@
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <h2 class="text-2xl font-extrabold text-slate-900">Riwayat Transaksi</h2>
-                            <p class="text-xs text-slate-500">Telusuri mutasi kas, status pembayaran DP, dan ekspor laporan CSV</p>
+                            <p class="text-xs text-slate-500">Telusuri mutasi kas, status DP, pelunasan cepat, dan ekspor CSV</p>
                         </div>
-                        <button onclick="exportToCSV()" class="px-4 py-2.5 rounded-xl bg-sage-primary text-white text-xs font-bold shadow-sm flex items-center gap-2">
+                        <button type="button" onclick="exportToCSV()" class="px-4 py-2.5 rounded-xl bg-sage-primary text-white text-xs font-bold shadow-sm flex items-center gap-2">
                             <i class="fa-solid fa-file-csv"></i> Ekspor CSV
                         </button>
                     </div>
@@ -466,7 +471,7 @@
                         <div class="p-5 border-b border-stone-100 grid grid-cols-1 sm:grid-cols-4 gap-3">
                             <div class="relative sm:col-span-2">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                                <input type="text" id="tx-search" oninput="renderHistoryTable()" placeholder="Cari pelanggan, catatan, atau staf pencatat..." class="w-full pl-9 pr-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                <input type="text" id="tx-search" oninput="renderHistoryTable()" placeholder="Cari pelanggan, catatan, atau pencatat..." class="w-full pl-9 pr-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                             </div>
                             <select id="tx-type-filter" onchange="renderHistoryTable()" class="w-full px-3.5 py-2 bg-stone-50 border border-stone-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                                 <option value="all">Semua Tipe</option>
@@ -516,7 +521,6 @@
                         </div>
                     </div>
 
-                    <!-- Monthly Summary Cards -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-[#E6F1EB] border border-[#CFE2D7] rounded-3xl p-5">
                             <p class="text-xs font-bold text-slate-600">Pemasukan Bulan Ini</p>
@@ -536,7 +540,6 @@
                         </div>
                     </div>
 
-                    <!-- Category Breakdown Bars -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                             <h3 class="text-sm font-extrabold text-slate-900 flex items-center gap-2">
@@ -552,7 +555,6 @@
                         </div>
                     </div>
 
-                    <!-- Data Utilities (Sample Data & Admin Clear All) -->
                     <div class="bg-white rounded-3xl border border-stone-200 p-5 flex flex-wrap items-center justify-between gap-3">
                         <div>
                             <p class="text-xs font-extrabold text-slate-800">Pengelolaan Data Pengujian</p>
@@ -578,7 +580,7 @@
                         <p class="text-xs text-slate-500">Kelola akun pengguna, identitas toko, sinkronisasi cloud, serta cadangan data</p>
                     </div>
 
-                    <!-- SECTION 1: MANAJEMEN PENGGUNA (TAMBAH / UBAH PERAN / HAPUS) -->
+                    <!-- Manajemen Pengguna -->
                     <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-5">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div>
@@ -592,7 +594,6 @@
                             </span>
                         </div>
 
-                        <!-- Form Tambah Pengguna (Admin Only) -->
                         <form id="add-user-form" onsubmit="handleAddUser(event)" class="p-4 rounded-2xl bg-[#FAF7F2] border border-stone-200/90 space-y-4">
                             <p class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Tambah Pengguna Baru</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -621,7 +622,6 @@
                             </button>
                         </form>
 
-                        <!-- Tabel Daftar Pengguna -->
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
@@ -637,7 +637,7 @@
                         </div>
                     </div>
 
-                    <!-- SECTION 2: PROFIL TOKO -->
+                    <!-- Profil Toko -->
                     <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                         <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-store text-[#1E513B]"></i> Profil Toko
@@ -673,14 +673,14 @@
                         </form>
                     </div>
 
-                    <!-- SECTION 3: SINKRONISASI DATABASE ONLINE (SUPABASE - ADMIN ONLY) -->
+                    <!-- Konfigurasi Supabase (Admin Only) -->
                     <div id="supabase-settings-card" class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <div>
                                 <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
                                     <i class="fa-solid fa-cloud text-[#1E513B]"></i> Sinkronisasi Database Online (Supabase)
                                 </h3>
-                                <p class="text-xs text-slate-500 mt-0.5">Hubungkan ke proyek Supabase Anda agar seluruh data transaksi & profil tersinkron otomatis di setiap HP.</p>
+                                <p class="text-xs text-slate-500 mt-0.5">Koneksi Supabase sudah tertanam permanen untuk proyek TOKO MUSTAFA dan dapat diperbarui bila perlu.</p>
                             </div>
                             <span id="cloud-conn-pill" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
                                 Belum Terhubung
@@ -693,8 +693,8 @@
                                 <input type="url" id="sb-url" placeholder="https://xxxx.supabase.co" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                             </div>
                             <div>
-                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Supabase Anon / Publishable Key</label>
-                                <input type="password" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..." class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">Supabase Publishable / Anon Key</label>
+                                <input type="password" id="sb-key" placeholder="sb_publishable_..." class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                             </div>
                         </div>
 
@@ -708,7 +708,7 @@
                         </div>
                     </div>
 
-                    <!-- SECTION 4: BACKUP & PULIHKAN DATA JSON -->
+                    <!-- Backup & Restore JSON -->
                     <div class="bg-white rounded-3xl border border-stone-200 p-5 sm:p-6 shadow-2xs space-y-4">
                         <h3 class="text-base font-extrabold text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-database text-[#1E513B]"></i> Backup & Pulihkan Data (JSON)
@@ -731,19 +731,19 @@
     </div>
 
     <!-- =====================================================================
-         JAVASCRIPT LOGIC
+         LOGIKA APLIKASI JAVASCRIPT
          ===================================================================== -->
     <script>
-        // Optional: Tempelkan URL & Key Supabase Anda di sini agar aktif otomatis di semua perangkat
-        const EMBEDDED_SUPABASE_URL = '';
-        const EMBEDDED_SUPABASE_KEY = '';
+        // Koneksi Supabase tertanam permanen untuk TOKO MUSTAFA
+        const EMBEDDED_SUPABASE_URL = 'https://emhifibcbhsvwkzdtajz.supabase.co';
+        const EMBEDDED_SUPABASE_KEY = 'sb_publishable_WuVvndrKJcy4Ny8lixqN8g_BrfRFg2B';
 
-        // Storage Keys
-        const KEY_SESSION = 'toko_mustafa_session_v2';
-        const KEY_USERS = 'toko_mustafa_users_v2';
-        const KEY_PROFILE = 'toko_mustafa_profile_v2';
-        const KEY_TX = 'toko_mustafa_tx_v2';
-        const KEY_SB_CFG = 'toko_mustafa_sb_cfg_v2';
+        // Kunci penyimpanan lokal (fallback & cache)
+        const KEY_SESSION = 'toko_mustafa_session_v3';
+        const KEY_USERS = 'toko_mustafa_users_v3';
+        const KEY_PROFILE = 'toko_mustafa_profile_v3';
+        const KEY_TX = 'toko_mustafa_tx_v3';
+        const KEY_SB_CFG = 'toko_mustafa_sb_cfg_v3';
 
         const DEFAULT_USERS = [
             { id: 'usr-1', name: 'Admin Toko', email: 'admin@toko.id', password: '123456', role: 'Admin' }
@@ -765,7 +765,7 @@
         let modalCallback = null;
 
         // =================================================================
-        // 1. INISIALISASI
+        // 1. INISIALISASI SAAT HALAMAN DIMUAT
         // =================================================================
         window.onload = async function() {
             const today = new Date().toISOString().split('T')[0];
@@ -819,7 +819,11 @@
                 const cfg = localStorage.getItem(KEY_SB_CFG);
                 if (cfg) {
                     const parsed = JSON.parse(cfg);
-                    if (parsed.url && parsed.key) sbConfig = parsed;
+                    if (parsed && parsed.disconnected) {
+                        sbConfig = { url: '', key: '' };
+                    } else if (parsed && parsed.url && parsed.key) {
+                        sbConfig = { url: parsed.url, key: parsed.key };
+                    }
                 }
             } catch (e) {}
 
@@ -911,7 +915,7 @@
         }
 
         // =================================================================
-        // 2. LOGIN, LOGOUT, & MANAJEMEN PENGGUNA
+        // 2. OTENTIKASI & MANAJEMEN PENGGUNA
         // =================================================================
         function togglePasswordVisibility() {
             const input = document.getElementById('login-password');
@@ -978,13 +982,11 @@
             document.getElementById('dropdown-user-email').innerText = currentUser.email;
             document.getElementById('hero-user-name').innerText = currentUser.name;
 
-            // Pengaturan khusus Admin
             document.getElementById('add-user-form').classList.toggle('hidden', !adminMode);
             document.getElementById('supabase-settings-card').classList.toggle('hidden', !adminMode);
             document.getElementById('btn-clear-all-data').classList.toggle('hidden', !adminMode);
             document.getElementById('user-mgmt-role-badge').innerText = adminMode ? 'Akses Admin Toko' : 'Mode Lihat Saja (Kasir)';
 
-            // Profil Toko: read-only untuk Kasir
             ['prof-name', 'prof-tagline', 'prof-phone', 'prof-target', 'prof-address'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = !adminMode;
@@ -1099,7 +1101,7 @@
                     : roleBadge;
 
                 const actionCell = (adminMode && !isSelf)
-                    ? `<button onclick="deleteUser('${u.id}')" title="Hapus Pengguna" class="w-8 h-8 rounded-lg bg-stone-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 inline-flex items-center justify-center transition">
+                    ? `<button type="button" onclick="deleteUser('${u.id}')" title="Hapus Pengguna" class="w-8 h-8 rounded-lg bg-stone-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 inline-flex items-center justify-center transition">
                         <i class="fa-solid fa-trash-can text-xs"></i>
                        </button>`
                     : `<span class="text-[11px] font-semibold text-slate-400">${isSelf ? 'Akun Aktif' : '-'}</span>`;
@@ -1116,7 +1118,7 @@
         }
 
         // =================================================================
-        // 3. NAVIGASI & TAB
+        // 3. NAVIGASI & TAB TRANSAKSI
         // =================================================================
         function toggleSidebar(open) {
             const sidebar = document.getElementById('app-sidebar');
@@ -1184,7 +1186,7 @@
         }
 
         // =================================================================
-        // 4. SINKRONISASI SUPABASE REST API
+        // 4. SINKRONISASI DATABASE SUPABASE
         // =================================================================
         function hasSupabaseConfig() {
             return Boolean(sbConfig && sbConfig.url && sbConfig.key);
@@ -1205,19 +1207,19 @@
             const key = document.getElementById('sb-key').value.trim();
 
             if (!url || !key) {
-                showToast('Masukkan Supabase Project URL dan Anon Key terlebih dahulu.', true);
+                showToast('Masukkan Supabase Project URL dan Publishable Key terlebih dahulu.', true);
                 return;
             }
 
             sbConfig = { url, key };
-            localStorage.setItem(KEY_SB_CFG, JSON.stringify(sbConfig));
+            localStorage.setItem(KEY_SB_CFG, JSON.stringify({ url, key, disconnected: false }));
             await syncFromCloudIfConfigured(false);
         }
 
         function disconnectSupabase() {
             if (!isAdmin()) return;
             sbConfig = { url: '', key: '' };
-            localStorage.removeItem(KEY_SB_CFG);
+            localStorage.setItem(KEY_SB_CFG, JSON.stringify({ url: '', key: '', disconnected: true }));
             document.getElementById('sb-url').value = '';
             document.getElementById('sb-key').value = '';
             updateCloudStatusUI(false);
@@ -1397,7 +1399,7 @@
         }
 
         // =================================================================
-        // 5. FORM TRANSAKSI, PELUNASAN DP, & PROFIL
+        // 5. FORM TRANSAKSI, PELUNASAN DP, & PROFIL TOKO
         // =================================================================
         function syncIncomeFields() {
             const total = parseFloat(document.getElementById('in-total').value) || 0;
@@ -1567,7 +1569,7 @@
         }
 
         // =================================================================
-        // 6. RENDER UI
+        // 6. RENDER TAMPILAN
         // =================================================================
         function renderAll() {
             const name = profile.shopName || 'TOKO MUSTAFA';
@@ -1670,7 +1672,7 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-2.5 shrink-0">
-                            ${isDP ? `<button onclick="settleInstallment('${tx.id}')" class="px-2.5 py-1 rounded-lg bg-[#1E513B] hover:bg-[#23533A] text-white text-[11px] font-bold">Lunasi</button>` : ''}
+                            ${isDP ? `<button type="button" onclick="settleInstallment('${tx.id}')" class="px-2.5 py-1 rounded-lg bg-[#1E513B] hover:bg-[#23533A] text-white text-[11px] font-bold">Lunasi</button>` : ''}
                             <p class="text-sm font-extrabold ${isMasuk ? 'text-[#1E513B]' : 'text-rose-600'}">
                                 ${isMasuk ? '+' : '-'}${formatRupiah(tx.nominal_bayar)}
                             </p>
@@ -1736,8 +1738,8 @@
                         <td class="py-3.5 px-4 text-right whitespace-nowrap">${amountHtml}</td>
                         <td class="py-3.5 px-4 text-center whitespace-nowrap">
                             <div class="inline-flex items-center gap-1.5">
-                                ${isDP ? `<button onclick="settleInstallment('${tx.id}')" class="px-2.5 py-1 rounded-lg bg-[#1E513B] hover:bg-[#23533A] text-white text-xs font-bold shadow-2xs">Lunasi</button>` : ''}
-                                ${canDelete ? `<button onclick="deleteTransaction('${tx.id}')" title="Hapus" class="w-8 h-8 rounded-lg bg-stone-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center transition"><i class="fa-solid fa-trash-can text-xs"></i></button>` : ''}
+                                ${isDP ? `<button type="button" onclick="settleInstallment('${tx.id}')" class="px-2.5 py-1 rounded-lg bg-[#1E513B] hover:bg-[#23533A] text-white text-xs font-bold shadow-2xs">Lunasi</button>` : ''}
+                                ${canDelete ? `<button type="button" onclick="deleteTransaction('${tx.id}')" title="Hapus" class="w-8 h-8 rounded-lg bg-stone-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 flex items-center justify-center transition"><i class="fa-solid fa-trash-can text-xs"></i></button>` : ''}
                             </div>
                         </td>
                     </tr>
