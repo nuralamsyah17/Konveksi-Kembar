@@ -46,6 +46,10 @@
                 <h3 id="modal-title" class="text-lg font-extrabold text-slate-900">Konfirmasi</h3>
             </div>
             <p id="modal-message" class="text-slate-600 text-sm mb-6 leading-relaxed">Apakah Anda yakin?</p>
+            <div id="modal-keyword-box" class="hidden mb-5">
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Ketik <span class="text-rose-600 font-extrabold">HAPUS</span> untuk mengonfirmasi:</label>
+                <input type="text" id="modal-keyword-input" autocomplete="off" placeholder="HAPUS" class="w-full px-3.5 py-2.5 bg-rose-50/40 border border-rose-200 rounded-xl text-sm font-extrabold uppercase tracking-wider text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500">
+            </div>
             <div class="flex justify-end gap-2.5">
                 <button type="button" id="modal-cancel" class="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-stone-100 hover:bg-stone-200 transition">Batal</button>
                 <button type="button" id="modal-confirm" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-sage-primary text-white transition shadow-sm">Ya, Lanjutkan</button>
@@ -389,7 +393,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-[#EEF6F1] border border-[#D4E6DC]">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Total Harga Order (Rp) *</label>
-                                    <input type="number" id="in-total" min="1" step="500" required placeholder="Contoh: 3500000" oninput="syncIncomeFields()" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                    <input type="number" id="in-total" min="1" step="1" inputmode="numeric" required placeholder="Contoh: 20000" oninput="syncIncomeFields()" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Status Pembayaran</label>
@@ -400,7 +404,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nominal Dibayar Sekarang (Rp) *</label>
-                                    <input type="number" id="in-paid" min="1" step="500" required placeholder="0" oninput="updateIncomeHint()" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm font-extrabold text-[#1E513B] focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                    <input type="number" id="in-paid" min="1" step="1" inputmode="numeric" required placeholder="0" oninput="updateIncomeHint()" class="w-full px-3.5 py-2.5 bg-white border border-stone-200 rounded-xl text-sm font-extrabold text-[#1E513B] focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                                 </div>
                                 <div class="sm:col-span-3 pt-2 border-t border-[#D4E6DC] flex flex-wrap justify-between gap-2 text-xs">
                                     <span class="text-slate-600 font-medium">Ringkasan Tagihan:</span>
@@ -448,7 +452,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nominal Pengeluaran (Rp) *</label>
-                                    <input type="number" id="out-amount" min="1" step="500" required placeholder="Contoh: 1250000" class="w-full px-3.5 py-2.5 bg-rose-50/40 border border-rose-200 rounded-xl text-sm font-extrabold text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500">
+                                    <input type="number" id="out-amount" min="1" step="1" inputmode="numeric" required placeholder="Contoh: 1250000" class="w-full px-3.5 py-2.5 bg-rose-50/40 border border-rose-200 rounded-xl text-sm font-extrabold text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-500">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Catatan Tambahan</label>
@@ -472,9 +476,14 @@
                             <h2 class="text-2xl font-extrabold text-slate-900">Riwayat Transaksi</h2>
                             <p class="text-xs text-slate-500">Telusuri mutasi kas, status DP, pelunasan cepat, dan ekspor CSV</p>
                         </div>
-                        <button type="button" onclick="exportToCSV()" class="px-4 py-2.5 rounded-xl bg-sage-primary text-white text-xs font-bold shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-file-csv"></i> Ekspor CSV
-                        </button>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button type="button" id="btn-history-clear-all" onclick="confirmResetAll()" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-2">
+                                <i class="fa-solid fa-broom"></i> Bersihkan Semua
+                            </button>
+                            <button type="button" onclick="exportToCSV()" class="px-4 py-2.5 rounded-xl bg-sage-primary text-white text-xs font-bold shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-file-csv"></i> Ekspor CSV
+                            </button>
+                        </div>
                     </div>
 
                     <div class="bg-white rounded-3xl border border-stone-200 shadow-2xs overflow-hidden">
@@ -674,7 +683,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Target Saldo Kas (Rp)</label>
-                                    <input type="number" id="prof-target" min="0" step="100000" placeholder="0" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                    <input type="number" id="prof-target" min="0" step="1" inputmode="numeric" placeholder="0" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Alamat Toko</label>
@@ -739,6 +748,23 @@
                             </label>
                         </div>
                     </div>
+
+                    <!-- Reset Data Keuangan (Admin Toko Only) -->
+                    <div id="reset-finance-card" class="bg-white rounded-3xl border border-rose-200 p-5 sm:p-6 shadow-2xs space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <div>
+                                <h3 class="text-base font-extrabold text-rose-700 flex items-center gap-2">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Reset Data Keuangan
+                                </h3>
+                                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                                    Bersihkan seluruh catatan <strong>Uang Masuk</strong>, <strong>Uang Keluar</strong>, <strong>Saldo Kas</strong>, dan <strong>Piutang DP</strong> menjadi <strong>Rp 0</strong> di perangkat ini maupun database cloud Supabase. Akun pengguna dan profil toko tetap aman.
+                                </p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="confirmResetAll()" class="px-5 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold shadow-sm transition flex items-center gap-2">
+                            <i class="fa-solid fa-broom"></i> Bersihkan Semua Uang Masuk, Keluar & Saldo
+                        </button>
+                    </div>
                 </section>
 
             </main>
@@ -779,6 +805,7 @@
         let transactions = [];
         let sbConfig = { url: EMBEDDED_SUPABASE_URL, key: EMBEDDED_SUPABASE_KEY };
         let modalCallback = null;
+        let modalRequiredKeyword = '';
 
         // =================================================================
         // 1. INISIALISASI SAAT HALAMAN DIMUAT
@@ -1001,6 +1028,8 @@
             document.getElementById('add-user-form').classList.toggle('hidden', !adminMode);
             document.getElementById('supabase-settings-card').classList.toggle('hidden', !adminMode);
             document.getElementById('btn-clear-all-data').classList.toggle('hidden', !adminMode);
+            document.getElementById('btn-history-clear-all').classList.toggle('hidden', !adminMode);
+            document.getElementById('reset-finance-card').classList.toggle('hidden', !adminMode);
             document.getElementById('user-mgmt-role-badge').innerText = adminMode ? 'Akses Admin Toko' : 'Mode Lihat Saja (Kasir)';
 
             ['prof-name', 'prof-owner', 'prof-tagline', 'prof-phone', 'prof-target', 'prof-address'].forEach(id => {
@@ -1414,6 +1443,19 @@
                     headers: sbHeaders()
                 });
             } catch (e) {}
+        }
+
+        async function deleteAllTransactionsFromCloud() {
+            if (!hasSupabaseConfig()) return true;
+            try {
+                const res = await fetch(`${sbConfig.url}/rest/v1/transaksi_konveksi?id=not.is.null`, {
+                    method: 'DELETE',
+                    headers: sbHeaders()
+                });
+                return res.ok;
+            } catch (e) {
+                return false;
+            }
         }
 
         function updateCloudStatusUI(isConnected, errorMsg = '') {
@@ -1966,41 +2008,91 @@
         }
 
         function confirmResetAll() {
-            if (!isAdmin()) return;
+            if (!isAdmin()) {
+                showToast('Hanya Admin Toko yang dapat membersihkan seluruh data keuangan.', true);
+                return;
+            }
             openConfirmModal(
-                'Kosongkan Semua Data',
-                'Seluruh transaksi lokal akan dihapus permanen agar Anda dapat memulai pencatatan dari nol. Lanjutkan?',
-                () => {
+                'Bersihkan Semua Data Keuangan',
+                'Seluruh transaksi Uang Masuk, Uang Keluar, Saldo Kas, dan Piutang DP akan dihapus permanen menjadi Rp 0 (termasuk di database cloud Supabase). Akun pengguna dan profil toko tidak akan terhapus.',
+                async () => {
                     transactions = [];
                     saveLocalTransactions();
+                    const cloudOk = await deleteAllTransactionsFromCloud();
                     renderAll();
-                    showToast('Seluruh transaksi lokal telah dikosongkan.');
-                }
+                    if (hasSupabaseConfig() && !cloudOk) {
+                        showToast('Data lokal dibersihkan, namun gagal menghapus baris di Supabase.', true);
+                    } else {
+                        showToast('Semua uang masuk, keluar, dan saldo berhasil dibersihkan menjadi Rp 0.');
+                    }
+                },
+                'HAPUS'
             );
         }
 
         function setupConfirmModal() {
             const modal = document.getElementById('confirm-modal');
+            const keywordInput = document.getElementById('modal-keyword-input');
+            const confirmBtn = document.getElementById('modal-confirm');
+
+            keywordInput.oninput = () => {
+                if (!modalRequiredKeyword) return;
+                const matched = keywordInput.value.trim().toUpperCase() === modalRequiredKeyword;
+                confirmBtn.disabled = !matched;
+                confirmBtn.classList.toggle('opacity-50', !matched);
+                confirmBtn.classList.toggle('cursor-not-allowed', !matched);
+            };
+
             document.getElementById('modal-cancel').onclick = () => {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
                 modalCallback = null;
+                modalRequiredKeyword = '';
             };
-            document.getElementById('modal-confirm').onclick = async () => {
+            confirmBtn.onclick = async () => {
+                if (modalRequiredKeyword && keywordInput.value.trim().toUpperCase() !== modalRequiredKeyword) {
+                    showToast(`Ketik "${modalRequiredKeyword}" terlebih dahulu untuk melanjutkan.`, true);
+                    return;
+                }
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
-                if (typeof modalCallback === 'function') await modalCallback();
+                const cb = modalCallback;
                 modalCallback = null;
+                modalRequiredKeyword = '';
+                if (typeof cb === 'function') await cb();
             };
         }
 
-        function openConfirmModal(title, message, onConfirm) {
+        function openConfirmModal(title, message, onConfirm, requiredKeyword = '') {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-message').innerText = message;
             modalCallback = onConfirm;
+            modalRequiredKeyword = (requiredKeyword || '').toUpperCase();
+
+            const keywordBox = document.getElementById('modal-keyword-box');
+            const keywordInput = document.getElementById('modal-keyword-input');
+            const confirmBtn = document.getElementById('modal-confirm');
+
+            if (modalRequiredKeyword) {
+                keywordBox.classList.remove('hidden');
+                keywordInput.value = '';
+                confirmBtn.disabled = true;
+                confirmBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-bold bg-rose-600 hover:bg-rose-700 text-white transition shadow-sm opacity-50 cursor-not-allowed';
+                confirmBtn.innerText = 'Bersihkan Permanen';
+            } else {
+                keywordBox.classList.add('hidden');
+                keywordInput.value = '';
+                confirmBtn.disabled = false;
+                confirmBtn.className = 'px-4 py-2.5 rounded-xl text-sm font-bold bg-sage-primary text-white transition shadow-sm';
+                confirmBtn.innerText = 'Ya, Lanjutkan';
+            }
+
             const modal = document.getElementById('confirm-modal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            if (modalRequiredKeyword) {
+                setTimeout(() => keywordInput.focus(), 50);
+            }
         }
 
         function showToast(msg, isError = false) {
