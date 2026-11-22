@@ -121,12 +121,17 @@
                 <!-- Menu Navigasi -->
                 <nav class="space-y-1.5" id="sidebar-nav">
                     <button type="button" onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
-                        <span class="flex items-center gap-3"><i class="fa-solid fa-house w-4 text-center"></i> Home</span>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-house w-4 text-center"></i> Dashboard</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
-                    <button type="button" onclick="navigateTo('catat', 'masuk')" data-nav="catat" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
-                        <span class="flex items-center gap-3"><i class="fa-solid fa-circle-plus w-4 text-center"></i> Pencatatan Transaksi</span>
+                    <button type="button" onclick="navigateTo('catat', 'masuk')" data-nav="catat-masuk" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-circle-plus w-4 text-center"></i> Uang Masuk</span>
+                        <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
+                    </button>
+
+                    <button type="button" onclick="navigateTo('catat', 'keluar')" data-nav="catat-keluar" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-circle-minus w-4 text-center"></i> Uang Keluar</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
@@ -136,7 +141,7 @@
                     </button>
 
                     <button type="button" onclick="navigateTo('rekap')" data-nav="rekap" class="nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition">
-                        <span class="flex items-center gap-3"><i class="fa-solid fa-chart-column w-4 text-center"></i> Laporan & Rekap Bulanan</span>
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-chart-column w-4 text-center"></i> Rekap Bulanan</span>
                         <span class="nav-dot w-1.5 h-1.5 rounded-full bg-white hidden"></span>
                     </button>
 
@@ -247,20 +252,25 @@
 
                     <!-- 4 Kartu Ringkasan Utama -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Saldo Usaha -->
+                        <!-- Saldo Kas -->
                         <div onclick="navigateTo('riwayat')" class="cursor-pointer bg-[#E6F1EB] hover:bg-[#DCEBE3] border border-[#CFE2D7] rounded-3xl p-5 sm:p-6 transition">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl bg-[#1E513B] text-white flex items-center justify-center text-lg shrink-0 shadow-xs">
                                     <i class="fa-solid fa-wallet"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-xs font-bold text-slate-600">Saldo Usaha</p>
+                                    <p class="text-xs font-bold text-slate-600">Saldo Kas</p>
                                     <p id="dash-saldo" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-0.5 truncate">Rp 0</p>
                                 </div>
                             </div>
-                            <p id="dash-target-info" class="text-xs font-semibold text-[#1E513B] mt-4">
-                                Kas bersih tersedia (Pemasukan dikurangi Pengeluaran)
-                            </p>
+                            <div class="mt-4 space-y-1.5">
+                                <p id="dash-target-info" class="text-xs font-semibold text-[#1E513B]">
+                                    Kas bersih tersedia (Pemasukan dikurangi Pengeluaran)
+                                </p>
+                                <div id="dash-target-bar-wrap" class="hidden w-full h-2 bg-white/80 rounded-full overflow-hidden">
+                                    <div id="dash-target-bar" class="h-full bg-[#1E513B] rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Total Pemasukan -->
@@ -295,14 +305,14 @@
                             </p>
                         </div>
 
-                        <!-- Piutang DP -->
+                        <!-- Selisih / Status Kas & Piutang DP -->
                         <div onclick="navigateTo('riwayat', 'DP')" class="cursor-pointer bg-[#FDF2F4] hover:bg-[#F9E6EA] border border-[#F4D6DD] rounded-3xl p-5 sm:p-6 transition">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 rounded-2xl bg-[#DE647E] text-white flex items-center justify-center text-lg shrink-0 shadow-xs">
                                     <i class="fa-solid fa-scale-balanced"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-xs font-bold text-slate-600">Piutang DP Pelanggan</p>
+                                    <p class="text-xs font-bold text-slate-600">Selisih Kas / Piutang DP</p>
                                     <p id="dash-piutang" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-0.5 truncate">Rp 0</p>
                                 </div>
                             </div>
@@ -643,10 +653,14 @@
                             <i class="fa-solid fa-store text-[#1E513B]"></i> Profil Toko
                         </h3>
                         <form onsubmit="handleProfileSave(event)" class="space-y-4">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Toko *</label>
                                     <input type="text" id="prof-name" required class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Nama Pemilik</label>
+                                    <input type="text" id="prof-owner" placeholder="Nama pemilik toko" class="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#1E513B]">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-slate-700 mb-1.5">Slogan / Subjudul Toko</label>
@@ -686,6 +700,7 @@
                                 Belum Terhubung
                             </span>
                         </div>
+                        <p id="cloud-error-detail" class="hidden text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3.5 py-2.5"></p>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -751,6 +766,7 @@
 
         const DEFAULT_PROFILE = {
             shopName: 'TOKO MUSTAFA',
+            ownerName: '',
             tagline: 'Produksi & Konveksi Pakaian',
             phone: '',
             address: '',
@@ -987,7 +1003,7 @@
             document.getElementById('btn-clear-all-data').classList.toggle('hidden', !adminMode);
             document.getElementById('user-mgmt-role-badge').innerText = adminMode ? 'Akses Admin Toko' : 'Mode Lihat Saja (Kasir)';
 
-            ['prof-name', 'prof-tagline', 'prof-phone', 'prof-target', 'prof-address'].forEach(id => {
+            ['prof-name', 'prof-owner', 'prof-tagline', 'prof-phone', 'prof-target', 'prof-address'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.disabled = !adminMode;
             });
@@ -1143,8 +1159,12 @@
                 if (el) el.classList.toggle('hidden', v !== viewName);
             });
 
+            const activeNavKey = viewName === 'catat'
+                ? (subOption === 'keluar' ? 'catat-keluar' : 'catat-masuk')
+                : viewName;
+
             document.querySelectorAll('.nav-item').forEach(btn => {
-                const isActive = btn.getAttribute('data-nav') === viewName;
+                const isActive = btn.getAttribute('data-nav') === activeNavKey;
                 const dot = btn.querySelector('.nav-dot');
                 if (isActive) {
                     btn.className = 'nav-item w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition bg-[#1E513B] text-white shadow-sm';
@@ -1193,12 +1213,17 @@
         }
 
         function sbHeaders() {
-            return {
-                'apikey': sbConfig.key,
-                'Authorization': `Bearer ${sbConfig.key}`,
+            const key = (sbConfig.key || '').trim();
+            const headers = {
+                'apikey': key,
                 'Content-Type': 'application/json',
                 'Prefer': 'resolution=merge-duplicates,return=representation'
             };
+            // Hanya sertakan Authorization Bearer untuk key JWT legacy (eyJ...), bukan sb_publishable_
+            if (!key.startsWith('sb_publishable_')) {
+                headers['Authorization'] = `Bearer ${key}`;
+            }
+            return headers;
         }
 
         async function saveSupabaseConfig() {
@@ -1247,12 +1272,19 @@
                 const profRes = await fetch(`${sbConfig.url}/rest/v1/profil_konveksi?id=eq.default&select=*`, {
                     headers: sbHeaders()
                 });
-                if (!profRes.ok) throw new Error('Gagal membaca profil_konveksi');
+                if (!profRes.ok) {
+                    const errText = await profRes.text();
+                    if (profRes.status === 401 && errText.includes('42501')) {
+                        throw new Error('Izin tabel database (GRANT) belum aktif. Jalankan perintah GRANT di SQL Editor Supabase.');
+                    }
+                    throw new Error(`HTTP ${profRes.status}: ${errText || 'Gagal membaca profil_konveksi'}`);
+                }
                 const profRows = await profRes.json();
 
                 if (profRows && profRows.length > 0) {
                     const row = profRows[0];
                     profile.shopName = row.nama_usaha || 'TOKO MUSTAFA';
+                    profile.ownerName = row.pemilik || '';
                     profile.phone = row.telepon || '';
                     profile.address = row.alamat || '';
                     profile.targetKas = Number(row.target_kas) || 0;
@@ -1264,7 +1296,13 @@
                 const txRes = await fetch(`${sbConfig.url}/rest/v1/transaksi_konveksi?select=*&order=tanggal.desc,created_at.desc`, {
                     headers: sbHeaders()
                 });
-                if (!txRes.ok) throw new Error('Gagal membaca transaksi_konveksi');
+                if (!txRes.ok) {
+                    const errText = await txRes.text();
+                    if (txRes.status === 401 && errText.includes('42501')) {
+                        throw new Error('Izin tabel transaksi (GRANT) belum aktif. Jalankan perintah GRANT di SQL Editor Supabase.');
+                    }
+                    throw new Error(`HTTP ${txRes.status}: ${errText || 'Gagal membaca transaksi_konveksi'}`);
+                }
                 const txRows = await txRes.json();
 
                 if (Array.isArray(txRows)) {
@@ -1287,13 +1325,14 @@
                     }
                 }
 
-                updateCloudStatusUI(true);
+                updateCloudStatusUI(true, '');
                 renderAll();
-                if (!silent) showToast('Data berhasil disinkronkan dengan Supabase!');
+                if (!silent) showToast('Terhubung & Tersinkron dengan Supabase!');
             } catch (err) {
                 console.error(err);
-                updateCloudStatusUI(false);
-                if (!silent) showToast('Gagal terhubung ke Supabase. Periksa URL & Key.', true);
+                const msg = err && err.message ? err.message : 'Gagal terhubung ke server Supabase.';
+                updateCloudStatusUI(false, msg);
+                if (!silent) showToast(`Gagal terhubung ke Supabase (${msg})`, true);
             } finally {
                 if (btnIcon) btnIcon.classList.remove('fa-spin');
             }
@@ -1308,7 +1347,7 @@
                     body: JSON.stringify([{
                         id: 'default',
                         nama_usaha: profile.shopName || 'TOKO MUSTAFA',
-                        pemilik: currentUser ? currentUser.name : 'Admin Toko',
+                        pemilik: profile.ownerName || (currentUser ? currentUser.name : 'Admin Toko'),
                         telepon: profile.phone || '',
                         alamat: profile.address || '',
                         target_kas: Number(profile.targetKas) || 0,
@@ -1361,7 +1400,10 @@
                     headers: sbHeaders(),
                     body: JSON.stringify(payload)
                 });
-            } catch (e) {}
+                updateCloudStatusUI(true);
+            } catch (e) {
+                updateCloudStatusUI(false);
+            }
         }
 
         async function deleteTransactionFromCloud(id) {
@@ -1374,18 +1416,23 @@
             } catch (e) {}
         }
 
-        function updateCloudStatusUI(isConnected) {
+        function updateCloudStatusUI(isConnected, errorMsg = '') {
             const sideBadge = document.getElementById('sidebar-sync-badge');
             const dashBadge = document.getElementById('dash-sync-badge');
             const pill = document.getElementById('cloud-conn-pill');
+            const errBox = document.getElementById('cloud-error-detail');
 
             if (isConnected) {
-                sideBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Terhubung Supabase`;
+                sideBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Terhubung & Tersinkron`;
                 dashBadge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-[#E6F1EB] text-[#1E513B]';
-                dashBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Terhubung Supabase`;
+                dashBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Terhubung & Tersinkron (Cloud)`;
                 if (pill) {
                     pill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800';
-                    pill.innerText = 'Terhubung Supabase';
+                    pill.innerText = 'Terhubung & Tersinkron (Cloud)';
+                }
+                if (errBox) {
+                    errBox.classList.add('hidden');
+                    errBox.innerText = '';
                 }
             } else {
                 sideBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> Offline / Lokal`;
@@ -1394,6 +1441,14 @@
                 if (pill) {
                     pill.className = 'px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
                     pill.innerText = hasSupabaseConfig() ? 'Gagal Koneksi Cloud' : 'Belum Terhubung';
+                }
+                if (errBox) {
+                    if (errorMsg) {
+                        errBox.innerText = `Detail kendala: ${errorMsg}`;
+                        errBox.classList.remove('hidden');
+                    } else {
+                        errBox.classList.add('hidden');
+                    }
                 }
             }
         }
@@ -1557,6 +1612,7 @@
             if (!isAdmin()) return;
 
             profile.shopName = document.getElementById('prof-name').value.trim() || 'TOKO MUSTAFA';
+            profile.ownerName = document.getElementById('prof-owner').value.trim();
             profile.tagline = document.getElementById('prof-tagline').value.trim() || 'Produksi & Konveksi Pakaian';
             profile.phone = document.getElementById('prof-phone').value.trim();
             profile.targetKas = parseFloat(document.getElementById('prof-target').value) || 0;
@@ -1585,6 +1641,7 @@
             document.getElementById('hero-shop-name').innerText = name;
 
             document.getElementById('prof-name').value = name;
+            document.getElementById('prof-owner').value = profile.ownerName || '';
             document.getElementById('prof-tagline').value = profile.tagline || '';
             document.getElementById('prof-phone').value = profile.phone || '';
             document.getElementById('prof-target').value = profile.targetKas || '';
@@ -1623,9 +1680,17 @@
             document.getElementById('dash-piutang').innerText = formatRupiah(totalPiutang);
 
             const target = Number(profile.targetKas) || 0;
-            document.getElementById('dash-target-info').innerText = target > 0
-                ? `Target Saldo: ${formatRupiah(target)} (${Math.min(100, Math.max(0, Math.round((saldo / target) * 100)))}% tercapai)`
-                : 'Kas bersih tersedia (Pemasukan dikurangi Pengeluaran)';
+            const targetWrap = document.getElementById('dash-target-bar-wrap');
+            const targetBar = document.getElementById('dash-target-bar');
+            if (target > 0) {
+                const pct = Math.min(100, Math.max(0, Math.round((saldo / target) * 100)));
+                document.getElementById('dash-target-info').innerText = `Target Saldo: ${formatRupiah(target)} (${pct}% tercapai)`;
+                targetWrap.classList.remove('hidden');
+                targetBar.style.width = `${pct}%`;
+            } else {
+                document.getElementById('dash-target-info').innerText = 'Kas bersih tersedia (Pemasukan dikurangi Pengeluaran)';
+                targetWrap.classList.add('hidden');
+            }
 
             document.getElementById('dash-piutang-sub').innerText = dpCount > 0
                 ? `${dpCount} order DP menunggu pelunasan`
