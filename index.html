@@ -474,11 +474,37 @@
                     <button type="button" onclick="manualSyncNow()" id="btn-sync-now" title="Sinkronisasi Cloud Supabase" class="w-9 h-9 rounded-full theme-bg-card border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
                         <i class="fa-solid fa-rotate"></i>
                     </button>
+                    <!-- Tombol & Panel Popover Notifikasi Terpadu (Piutang DP & Stok Minimal) -->
+                    <div class="relative" id="notif-dropdown-wrapper">
+                        <button type="button" onclick="toggleNotifDropdown()" title="Pusat Notifikasi Toko (Tagihan DP & Stok Minimal)" class="relative w-9 h-9 rounded-full theme-bg-card border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
+                            <i class="fa-regular fa-bell"></i>
+                            <span id="notif-bell-count" class="hidden -top-1 -right-1 absolute min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
+                        </button>
 
-                    <button type="button" onclick="navigateTo('riwayat', 'DP')" title="Order DP Belum Lunas" class="relative w-9 h-9 rounded-full theme-bg-card border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-600 text-xs transition shadow-2xs">
-                        <i class="fa-regular fa-bell"></i>
-                        <span id="dp-bell-count" class="hidden -top-1 -right-1 absolute min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-extrabold flex items-center justify-center">0</span>
-                    </button>
+                        <div id="notif-dropdown" class="hidden fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-16 sm:top-auto sm:mt-2 sm:w-[420px] theme-bg-card rounded-2xl shadow-2xl border border-slate-200 z-50 overflow-hidden">
+                            <div class="px-4 py-3 theme-bg-sidebar border-b border-slate-200/80 flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-bell text-amber-500 text-xs"></i>
+                                    <span class="text-xs font-extrabold text-slate-900">Pusat Pemberitahuan Toko</span>
+                                </div>
+                                <span id="notif-header-pill" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800">Semua Aman</span>
+                            </div>
+
+                            <div id="notif-list-body" class="max-h-[70vh] sm:max-h-96 overflow-y-auto divide-y divide-slate-100">
+                                <!-- Daftar pemberitahuan piutang DP & stok di bawah minimal dirender oleh JS -->
+                            </div>
+
+                            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-2 text-[11px]">
+                                <div class="flex items-center gap-1.5 min-w-0">
+                                    <span id="notif-cloud-dot" class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+                                    <span id="notif-cloud-text" class="font-bold text-slate-600 truncate">Cloud: Memeriksa...</span>
+                                </div>
+                                <button type="button" onclick="closeNotifDropdown()" class="font-extrabold text-slate-500 hover:text-slate-800 shrink-0">
+                                    Tutup
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Dropdown Profil & Pengaturan Akun -->
                     <div class="relative" id="user-dropdown-wrapper">
@@ -2371,6 +2397,7 @@
         }
 
         function toggleUserDropdown() {
+            closeNotifDropdown();
             document.getElementById('user-dropdown').classList.toggle('hidden');
         }
 
@@ -2378,10 +2405,203 @@
             document.getElementById('user-dropdown').classList.add('hidden');
         }
 
+        function toggleNotifDropdown() {
+            closeUserDropdown();
+            renderNotifDropdown();
+            document.getElementById('notif-dropdown').classList.toggle('hidden');
+        }
+
+        function closeNotifDropdown() {
+            const el = document.getElementById('notif-dropdown');
+            if (el) el.classList.add('hidden');
+        }
+
+        function getLowStockProducts() {
+            return products.filter(p => {
+                const stok = Number(p.stock) || 0;
+                const minStok = p.minStock !== undefined && p.minStock !== null ? Number(p.minStock) : 5;
+                return stok <= minStok;
+            });
+        }
+
+        function getUnpaidSalesTransactions() {
+            return transactions
+                .filter(tx => {
+                    const st = tx.subTipe || (tx.tipe === 'masuk' ? 'penjualan' : 'operasional');
+                    if (st !== 'penjualan') return false;
+                    const total = Number(tx.nominal_total) || 0;
+                    const paid = Number(tx.nominal_bayar) || 0;
+                    return tx.status_bayar !== 'Lunas' && total > paid;
+                })
+                .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+        }
+
+        function renderNotifDropdown() {
+            const listBody = document.getElementById('notif-list-body');
+            const headerPill = document.getElementById('notif-header-pill');
+            const cloudDot = document.getElementById('notif-cloud-dot');
+            const cloudText = document.getElementById('notif-cloud-text');
+            if (!listBody || !headerPill) return;
+
+            const unpaidSales = getUnpaidSalesTransactions();
+            const lowItems = getLowStockProducts();
+            const totalAlerts = unpaidSales.length + lowItems.length;
+
+            // Sinkronkan status cloud di footer popover notifikasi
+            const isCloudConnected = document.getElementById('sidebar-sync-badge')?.innerText?.includes('Cloud ERP Aktif');
+            if (cloudDot && cloudText) {
+                if (isCloudConnected) {
+                    cloudDot.className = 'w-2 h-2 rounded-full bg-emerald-500 shrink-0';
+                    cloudText.innerText = 'Supabase Cloud: Tersinkron';
+                } else {
+                    cloudDot.className = 'w-2 h-2 rounded-full bg-amber-400 shrink-0';
+                    cloudText.innerText = hasSupabaseConfig() ? 'Supabase Cloud: Siap Sinkron' : 'Mode Penyimpanan Lokal';
+                }
+            }
+
+            if (totalAlerts === 0) {
+                headerPill.innerText = 'Semua Aman';
+                headerPill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800';
+                listBody.innerHTML = `
+                    <div class="py-8 px-5 text-center space-y-2">
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center">
+                            <i class="fa-solid fa-circle-check text-lg"></i>
+                        </div>
+                        <p class="text-xs font-extrabold text-slate-800">Semua pembayaran sudah lunas dan stok aman</p>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">Tidak ada piutang DP yang tertunda maupun barang di bawah batas minimal stok.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            headerPill.innerText = `${totalAlerts} Perlu Perhatian`;
+            headerPill.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800';
+
+            let html = '';
+
+            // Bagian 1: Pembayaran Belum Lunas (DP / Piutang)
+            if (unpaidSales.length > 0) {
+                const totalSisaPiutang = unpaidSales.reduce((sum, tx) => sum + Math.max(0, (Number(tx.nominal_total) || 0) - (Number(tx.nominal_bayar) || 0)), 0);
+                html += `
+                    <div class="p-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2 px-1">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-hand-holding-dollar text-amber-600"></i> Pembayaran Belum Lunas (DP / Piutang)
+                            </span>
+                            <span class="text-[10px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                ${unpaidSales.length} Nota • ${formatRupiah(totalSisaPiutang)}
+                            </span>
+                        </div>
+                        <div class="space-y-2">
+                            ${unpaidSales.map(tx => {
+                                const sisa = Math.max(0, (Number(tx.nominal_total) || 0) - (Number(tx.nominal_bayar) || 0));
+                                const docNo = tx.noNota || generateFallbackDocNo('penjualan', tx.tanggal, tx.id);
+                                return `
+                                    <div class="p-3 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(tx.judul)}</p>
+                                                <p class="text-[11px] text-slate-500 truncate">
+                                                    <span class="font-mono font-bold text-slate-700">${escapeHtml(docNo)}</span> • ${formatTanggalID(tx.tanggal)}
+                                                </p>
+                                                <p class="text-[11px] text-slate-600 truncate mt-0.5">${escapeHtml(tx.namaBarang || tx.kategori)} (${tx.jumlah || 1} pcs)</p>
+                                            </div>
+                                            <div class="text-right shrink-0">
+                                                <p class="text-[10px] font-bold text-amber-800">Sisa Tagihan</p>
+                                                <p class="text-xs font-extrabold text-rose-700">${formatRupiah(sisa)}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-end gap-1.5 pt-1 border-t border-amber-200/60">
+                                            <button type="button" onclick="closeNotifDropdown(); openReceiptModal('${tx.id}')" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold flex items-center gap-1 transition">
+                                                <i class="fa-solid fa-receipt text-[10px]"></i> Lihat Nota
+                                            </button>
+                                            <button type="button" onclick="closeNotifDropdown(); settleOrder('${tx.id}')" class="px-3 py-1.5 rounded-xl bg-erp-primary text-white text-[11px] font-extrabold flex items-center gap-1 shadow-2xs transition">
+                                                <i class="fa-solid fa-check text-[10px]"></i> Lunasi
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div class="text-right px-1">
+                            <button type="button" onclick="closeNotifDropdown(); navigateTo('riwayat', 'DP')" class="text-[11px] font-extrabold text-amber-800 hover:underline">
+                                Lihat Semua Piutang DP di Riwayat &rarr;
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Bagian 2: Stok Barang di Bawah Minimal
+            if (lowItems.length > 0) {
+                html += `
+                    <div class="p-3 space-y-2">
+                        <div class="flex items-center justify-between gap-2 px-1">
+                            <span class="text-[11px] font-extrabold uppercase tracking-wider text-rose-800 flex items-center gap-1.5">
+                                <i class="fa-solid fa-boxes-stacked text-rose-600"></i> Stok Barang di Bawah Minimal
+                            </span>
+                            <span class="text-[10px] font-extrabold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">
+                                ${lowItems.length} Item
+                            </span>
+                        </div>
+                        <div class="space-y-2">
+                            ${lowItems.map(p => {
+                                const stok = Number(p.stock) || 0;
+                                const minStok = p.minStock !== undefined && p.minStock !== null ? Number(p.minStock) : 5;
+                                const isOut = stok <= 0;
+                                return `
+                                    <div class="p-2.5 rounded-2xl ${isOut ? 'bg-rose-50/70 border-rose-200/80' : 'bg-slate-50 border-slate-200/80'} border flex items-center justify-between gap-2.5">
+                                        <div class="min-w-0 space-y-0.5">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="w-2 h-2 rounded-full ${isOut ? 'bg-rose-600' : 'bg-amber-500'} shrink-0"></span>
+                                                <p class="text-xs font-extrabold text-slate-900 truncate">${escapeHtml(p.name)}</p>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 truncate">
+                                                ${escapeHtml(p.type || 'Seragam')}${p.size ? ' • Ukuran <strong>' + escapeHtml(p.size) + '</strong>' : ''}
+                                            </p>
+                                            <p class="text-[11px] font-bold ${isOut ? 'text-rose-600' : 'text-amber-700'}">
+                                                Sisa: ${stok} pcs <span class="text-slate-400 font-normal">(Minimal: ${minStok} pcs)</span>
+                                            </p>
+                                        </div>
+                                        <button type="button" onclick="quickRestockFromNotif('${p.id}')" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-extrabold shrink-0 shadow-2xs transition">
+                                            + Beli Stok
+                                        </button>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div class="text-right px-1">
+                            <button type="button" onclick="closeNotifDropdown(); navigateTo('persediaan')" class="text-[11px] font-extrabold text-erp-primary hover:underline">
+                                Kelola Persediaan Barang &rarr;
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            listBody.innerHTML = html;
+        }
+
+        function quickRestockFromNotif(productId) {
+            closeNotifDropdown();
+            navigateTo('pembelian');
+            setTimeout(() => {
+                const selectEl = document.getElementById('buy-product-select');
+                if (selectEl) {
+                    selectEl.value = productId;
+                    onSelectBuyProduct();
+                }
+                document.getElementById('buy-qty')?.focus();
+            }, 60);
+        }
+
         function setupDropdownOutsideClick() {
             document.addEventListener('click', (e) => {
-                const wrapper = document.getElementById('user-dropdown-wrapper');
-                if (wrapper && !wrapper.contains(e.target)) closeUserDropdown();
+                const userWrapper = document.getElementById('user-dropdown-wrapper');
+                if (userWrapper && !userWrapper.contains(e.target)) closeUserDropdown();
+
+                const notifWrapper = document.getElementById('notif-dropdown-wrapper');
+                if (notifWrapper && !notifWrapper.contains(e.target)) closeNotifDropdown();
             });
         }
 
@@ -4456,17 +4676,11 @@
             // Hitung metrik keuangan
             let totalIn = 0;
             let totalOut = 0;
-            let dpCount = 0;
 
             transactions.forEach(tx => {
                 const paid = Number(tx.nominal_bayar) || 0;
-                const total = Number(tx.nominal_total) || 0;
                 if (tx.tipe === 'masuk') {
                     totalIn += paid;
-                    const st = tx.subTipe || 'penjualan';
-                    if (st === 'penjualan' && tx.status_bayar !== 'Lunas' && total > paid) {
-                        dpCount++;
-                    }
                 } else {
                     totalOut += paid;
                 }
@@ -4479,13 +4693,6 @@
             setText('kas-in-summary', formatRupiah(totalIn));
             setText('kas-out-summary', formatRupiah(totalOut));
             setText('kas-net-summary', formatRupiah(saldoAkhir));
-
-            // Lonceng notifikasi DP
-            const dpBell = document.getElementById('dp-bell-count');
-            if (dpBell) {
-                dpBell.innerText = dpCount;
-                dpBell.classList.toggle('hidden', dpCount <= 0);
-            }
 
             // Target kas progress
             const targetKas = Number(profile.targetKas) || 0;
@@ -4505,16 +4712,24 @@
             // Hitung stok & nilai aset
             let totalStockUnits = 0;
             let totalStockAsset = 0;
-            const lowStockItems = [];
+            const lowStockItems = getLowStockProducts();
+            const unpaidSalesItems = getUnpaidSalesTransactions();
+            const totalNotifAlerts = unpaidSalesItems.length + lowStockItems.length;
 
             products.forEach(p => {
                 const s = Number(p.stock) || 0;
-                const min = Number(p.minStock) || 5;
                 const unitVal = Number(p.buyPrice) > 0 ? Number(p.buyPrice) : Number(p.price) || 0;
                 totalStockUnits += s;
                 totalStockAsset += s * unitVal;
-                if (s <= min) lowStockItems.push(p);
             });
+
+            // Badge Lonceng Notifikasi Terpadu di Header (Piutang DP + Stok Minimal)
+            const notifBell = document.getElementById('notif-bell-count');
+            if (notifBell) {
+                notifBell.innerText = totalNotifAlerts;
+                notifBell.classList.toggle('hidden', totalNotifAlerts <= 0);
+            }
+            renderNotifDropdown();
 
             setText('hero-stock-units', `${totalStockUnits} Unit Stok`);
             setText('hero-cust-count', `${customers.length} Konsumen`);
